@@ -40,8 +40,6 @@ app.get("/janken", (req, res) => {
   if( num==1 ) cpu = 'グー';
   else if( num==2 ) cpu = 'チョキ';
   else cpu = 'パー';
-  // ここに勝敗の判定を入れる
-  // 今はダミーで人間の勝ちにしておく
   let judgement = '';
   if (hand === cpu) {
     judgement = 'あいこ';
@@ -77,8 +75,6 @@ app.get("/coin", (req, res) => {
   let cpu = '';
   if( num==1 ) cpu = '表';
   else if( num==2 ) cpu = '裏';
-  // ここに勝敗の判定を入れる
-  // 今はダミーで人間の勝ちにしておく
   let judgement = '';
   if (yosou === cpu) {
     judgement = 'あたり';
@@ -115,8 +111,6 @@ app.get("/saikoro", (req, res) => {
   else if( num==4 ) cpu = '4';
   else if( num==5 ) cpu = '5';
   else cpu = '6';
-  // ここに勝敗の判定を入れる
-  // 今はダミーで人間の勝ちにしておく
   let judgement = '';
   if (me === cpu) {
     judgement = 'あたり！！';
