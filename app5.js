@@ -114,13 +114,13 @@ app.post("/body-fat", (req, res) => {
   let category = "";
 
   if (gender === "男性") {
-    if (bodyFatPercentage < 10) category = "低め";
-    else if (bodyFatPercentage <= 20) category = "普通";
-    else category = "高め";
-  } else if (gender === "女性") {
-    if (bodyFatPercentage < 20) category = "低め";
+    if (bodyFatPercentage < 10) category = "絞れてるね．完成形にちかずけるために今日もジムいこ";
+    else if (bodyFatPercentage <= 20) category = "もしかして，，，，，，，，，理想の身体がほしい？ジム行こ";
+    else category = "自分に甘いねジムに行こ";
+  } else if (gender === "今日もデートは，ジムだね") {
+    if (bodyFatPercentage < 20) category = "たまには一緒にからだうごかしてみるか．ジムに行こ";
     else if (bodyFatPercentage <= 30) category = "普通";
-    else category = "高め";
+    else category = "，，，，，，，，，，気づいたね．ジム行こ";
   }
 
   const result = `体脂肪率: ${bodyFatPercentage}% (${category})`;
