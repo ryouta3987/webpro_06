@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>サイコロの目当て</title>
+</head>
+<body>
+    <p>あなたの予想は<%= your %>です．</p>
+    <p>サイコロの目は<%= cpu %>です．</p>
+    <p>判定：<%= judgement %></p>
+    <p>現在<%= total %>試合中<%= win %>勝しています．</p>
+    <hr>
+    <form action="/saikoro">
+        <input type="text" name="me" required>
+        <label for="me">次は何がでる？</label>
+        <input type="hidden" name="win" value="<%= win %>">
+        <input type="hidden" name="total" value="<%= total %>">
+        <input type="submit" values="コロコロ">
+    </form>   
+</body>
+</html>

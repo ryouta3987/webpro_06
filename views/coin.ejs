@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <title>コイントス</title>
+</head>
+<body>
+    <p>あなたの予想は<%= your %>です．</p>
+    <p>結果は<%= cpu %>です．</p>
+    <p>判定：<%= judgement %></p>
+    <p>現在<%= total %>回中<%= win %>回当たっています．</p>
+    <hr>
+    <form action="/coin">
+        <input type="text" name="yosou" required>
+        <label for="yosou">次はどっちが出る？</label>
+        <input type="hidden" name="win" value="<%= win %>">
+        <input type="hidden" name="total" value="<%= total %>">
+        <input type="submit" values="チャリーン">
+    </form>   
+</body>
+</html>
