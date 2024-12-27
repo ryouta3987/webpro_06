@@ -7,8 +7,8 @@
 -|-
 app5.js | プログラム本体
 public/janken.html | じゃんけんの開始画面
-views/guess.ejs | 数字一発当てゲーム開始画面
-views/quote.ejs | 名言表示画面
+views/sales.ejs | 蓄電池訪問販売の開始画面
+views/bodyFat.ejs | 体脂肪率（ジム）の表示画面
 ## じゃんけん
 ### ファイルの起動方法
 1. app5.js を起動する
@@ -34,38 +34,43 @@ let judgement = "勝ち";
 ### フローチャート
 ```mermaid
 flowchart TD
-  A[スタート] --> B[クエリパラメータを取得]
-  B --> C{手が指定されているか?}
-  C -- はい --> D[手を使用]
-  C -- いいえ --> E[手を「未選択」に設定]
-  D --> F[勝ち数と対戦回数を取得]
-  E --> F
-  F --> G{数値に変換}
-  G --> H[CPUの手をランダムに決定]
-  H --> J[勝敗判定]
-  J --> K{勝ち}
-  K -- はい --> L[勝ち数 +1]
-  K -- いいえ --> M[勝ち数 変更なし]
-  L --> N[対戦回数 +1]
-  M --> N
-  N --> O[結果を表示]
-  O --> P[終了]
+  A[スタート] --> B[GET または POST リクエストを判定]
+  B -- GETリクエスト --> C[状況: null, 切り返し: null をテンプレートに渡す]
+  C --> D[sales テンプレートをレンダリング]
+  D --> Z[終了]
+  B -- POSTリクエスト --> E[フォームデータから状況を取得]
+  E --> F{状況に対応する切り返し例が存在するか?}
+  F -- はい --> G[対応する切り返し例リストを取得]
+  G --> H[ランダムに切り返し例を1つ選択]
+  H --> I[デバッグログに記録 状況と切り返し例]
+  I --> J[状況と選ばれた切り返し例をテンプレートに渡す]
+  J --> D
+  F -- いいえ --> K[デバッグログ: 対応する切り返し例なし]
+  K --> D
 ```
 
-## 数字一発当て
+## 蓄電池訪問販売
 ### ファイルの起動方法
 1. app5.js を起動する
-1. Webブラウザでlocalhost:8080/guessにアクセスする
-1. 数字を入力する
+1. Webブラウザでlocalhost:8080/salesにアクセスする
+1. 状態を入力する
 ### プログラムの内容
 ```javascript
-const userGuess = Number(req.query.guess || 0);
+const situation = req.body.situation;
 ```
-で,ユーザーが入力した値を受け取る.
+で、ユーザーが選択した状況（ネック）を取得する。
 ```javascript
-const correctNumber = Math.floor(Math.random() * 100) + 1;
+const possibleResponses = responses[situation];
 ```
-で,ランダムな数値を出力する.
+で、選択したネックに対応する切り返し例を取得する。
+```javascript
+response = possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+```
+で、リスト内からランダムに1つの切り返し例を選択する。
+```javascript
+res.render("sales", { situation, response });
+```
+で、選択したネックと切り返し例をテンプレートに渡す。
 ### フローチャート
 ```mermaid
 flowchart TD
@@ -78,37 +83,38 @@ flowchart TD
   F --> G[終了]
 ```
 
-## 名言表示
+## 体脂肪率
 ### ファイルの起動方法
 1. app5.js を起動する
-1. Webブラウザでlocalhost:8080/quoiteにアクセスする
-1. 見たいものをクリックする
+1. Webブラウザでlocalhost:8080/bodyFatにアクセスする
+1. 必要な数値を入力して送信する
 ### プログラムの内容
 ```javascript
-const themeQuotes = quotes[theme];
+const weight = parseFloat(req.body.weight);
 ```
-で,事前に定義されていたテーマ別の名言データを取得する.
+で、ユーザーが入力した体重（kg）を取得する。
 ```javascript
-Math.random
+const fatMass = parseFloat(req.body.fatMass);
 ```
-で,リスト内の名言を一つ選択する.　
+で、体脂肪量（kg）を取得する。
 ```javascript
-res.render("quote", { theme, quote });
+const bodyFatPercentage = ((fatMass / weight) * 100).toFixed(2);
 ```
-テーマと選ばれた名言をテンプレートに渡す.
+で、体脂肪率を計算する。
+```javascript
+res.render("bodyFat", { result });
+```
+で、計算結果をテンプレートに渡す。
 ### フローチャート
 ```mermaid
 flowchart TD
-  A[スタート] --> B[GET または POST リクエストを判定]
-  B -- GETリクエスト --> C[テーマ: null, 名言: null をテンプレートに渡す]
-  C --> D[quote テンプレートをレンダリング]
-  D --> Z[終了]
-  B -- POSTリクエスト --> E[フォームデータからテーマを取得]
-  E --> F{テーマに対応する名言リストが存在するか?}
-  
-  F -- はい --> G[テーマに対応する名言リストを取得]
-  G --> H[ランダムに名言を1つ選択]
-  H --> I[デバッグログに記録 テーマと名言]
-  I --> J[テーマと選ばれた名言をテンプレートに渡す]
-  J --> D
+  A[スタート] --> B[体重と体脂肪量の入力値を取得]
+  B --> C{入力値は有効か?}
+  C -- はい --> D[体脂肪率を計算]
+  D --> E[体脂肪率に応じたメッセージを作成]
+  E --> F[結果をテンプレートに渡す]
+  F --> G[bodyFat テンプレートをレンダリング]
+  G --> Z[終了]
+  C -- いいえ --> H[エラーメッセージを作成]
+  H --> F
 ```
