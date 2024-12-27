@@ -54,48 +54,6 @@ app.get("/janken", (req, res) => {
   res.render("janken", { your: hand, cpu: cpu, judgement: judgement, win: win, total: total });
 });
 
-app.get("/guess", (req, res) => {
-  const userGuess = Number(req.query.guess || 0); // 初期値設定
-  const correctNumber = Math.floor(Math.random() * 100) + 1;
-
-  let message = "";
-  if (userGuess === correctNumber) {
-    message = "おめでとうございます！正解です！";
-  } else if (userGuess > correctNumber) {
-    message = "高すぎます。";
-  } else {
-    message = "低すぎます。";
-  }
-
-  res.render("guess", { message, correctNumber });
-});
-
-// 名言表示
-const quotes = {
-  人生: ["生きるとは、自分自身を発見することだ。", "過去を振り返るな。未来に向かって進め。", "人生は挑戦の連続だ。"],
-  成功: ["成功は失敗から学ぶことだ。", "挑戦なくして成功なし。", "夢なきものには成功なし"],
-  挑戦: ["何事も挑戦することに意味がある。", "失敗を恐れるな、挑戦こそが未来を創る。", "挑戦する者に道は開かれる。"],
-};
-
-app.get("/quote", (req, res) => {
-  res.render("quote", { theme: null, quote: null });
-});
-
-app.post("/quote", (req, res) => {
-  const theme = req.body.theme; // フォームデータ取得
-  const themeQuotes = quotes[theme];
-  let quote = null;
-
-  if (themeQuotes) {
-    quote = themeQuotes[Math.floor(Math.random() * themeQuotes.length)];
-    console.log(`テーマ: ${theme}, 名言: ${quote}`); // デバッグ情報
-  } else {
-    console.log(`不明なテーマ: ${theme}`);
-  }
-
-  res.render("quote", { theme, quote });
-});
-
 // 体脂肪率計算機能
 app.get("/body-fat", (req, res) => {
   res.render("bodyFat", { result: null });
@@ -114,17 +72,56 @@ app.post("/body-fat", (req, res) => {
   let category = "";
 
   if (gender === "男性") {
-    if (bodyFatPercentage < 10) category = "絞れてるね．完成形にちかずけるために今日もジムいこ";
-    else if (bodyFatPercentage <= 20) category = "もしかして，，，，，，，，，理想の身体がほしい？ジム行こ";
-    else category = "自分に甘いねジムに行こ";
-  } else if (gender === "今日もデートは，ジムだね") {
-    if (bodyFatPercentage < 20) category = "たまには一緒にからだうごかしてみるか．ジムに行こ";
+    if (bodyFatPercentage < 10) category = "絞れてるね．完成形に近づけるために今日もジムいこ";
+    else if (bodyFatPercentage <= 20) category = "もしかして……理想の身体がほしい？ジム行こ";
+    else category = "自分に甘いね。ジムに行こ";
+  } else {
+    if (bodyFatPercentage < 20) category = "たまには一緒に身体を動かしてみるか。ジムに行こ";
     else if (bodyFatPercentage <= 30) category = "普通";
-    else category = "，，，，，，，，，，気づいたね．ジム行こ";
+    else category = "……気づいたね。ジム行こ";
   }
 
   const result = `体脂肪率: ${bodyFatPercentage}% (${category})`;
   res.render("bodyFat", { result });
+});
+
+// 訪問販売のネック切り返し機能
+const responses = {
+  高い: [
+    "その価値を実感していただけると思います！具体的にどの部分が気になりますか？",
+    "少し高く感じられるかもしれませんが、長期的にはコスト削減になります。",
+  ],
+  必要ない: [
+    "一見そう思われるかもしれませんが、実際に使ってみると便利だと感じるお客様が多いです。",
+    "それでは、具体的にどの部分が不要と感じますか？お話を伺えますか？",
+  ],
+  時間がない: [
+    "お忙しい中ありがとうございます。たった5分だけお時間いただければ、重要なポイントをお伝えします。",
+    "お時間をいただかずに資料だけでもお渡しできますが、いかがでしょうか？",
+  ],
+  他社と比較中: [
+    "他社様との違いをお伝えしたいのですが、具体的にどの部分を重視されていますか？",
+    "競合製品も素晴らしいですが、当社の強みは〇〇です！ぜひ比較いただきたいです。",
+  ],
+};
+
+app.get("/sales", (req, res) => {
+  res.render("sales", { situation: null, response: null });
+});
+
+app.post("/sales", (req, res) => {
+  const situation = req.body.situation; // フォームデータ取得
+  const possibleResponses = responses[situation];
+  let response = null;
+
+  if (possibleResponses) {
+    response = possibleResponses[Math.floor(Math.random() * possibleResponses.length)];
+    console.log(`ネック: ${situation}, 切り返し: ${response}`);
+  } else {
+    console.log(`不明なネック: ${situation}`);
+  }
+
+  res.render("sales", { situation, response });
 });
 
 // サーバー起動
