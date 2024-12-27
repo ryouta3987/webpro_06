@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>テーマ別名言</title>
+</head>
+<body>
+  <h1>テーマ別名言表示</h1>
+
+  <!-- フォーム -->
+  <form action="/quote" method="POST">
+    <p>テーマを選択してください:</p>
+    <div>
+      <input type="radio" id="theme-life" name="theme" value="人生" required>
+      <label for="theme-life">人生</label>
+    </div>
+    <div>
+      <input type="radio" id="theme-success" name="theme" value="成功">
+      <label for="theme-success">成功</label>
+    </div>
+    <div>
+      <input type="radio" id="theme-challenge" name="theme" value="挑戦">
+      <label for="theme-challenge">挑戦</label>
+    </div>
+    <button type="submit">名言を表示</button>
+  </form>
+
+  <!-- 名言の表示 -->
+  <% if (theme && quote) { %>
+    <h2>テーマ: <%= theme %></h2>
+    <p>名言: "<%= quote %>"</p>
+    <a href="/quote">別のテーマを選ぶ</a>
+  <% } %>
+</body>
+</html>
