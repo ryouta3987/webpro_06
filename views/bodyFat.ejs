@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>体脂肪率計算</title>
+</head>
+<body>
+  <h1>体脂肪率計算</h1>
+  <form action="/body-fat" method="POST">
+    <label for="weight">体重（kg）:</label>
+    <input type="number" id="weight" name="weight" step="0.1" placeholder="例: 70" required><br><br>
+
+    <label for="fatMass">体脂肪量（kg）:</label>
+    <input type="number" id="fatMass" name="fatMass" step="0.1" placeholder="例: 15" required><br><br>
+
+    <label for="gender">性別:</label>
+    <select id="gender" name="gender" required>
+      <option value="">選択してください</option>
+      <option value="男性">男性</option>
+      <option value="女性">女性</option>
+    </select><br><br>
+
+    <button type="submit">計算</button>
+  </form>
+
+  <h2>結果</h2>
+  <p>
+    <% if (result) { %>
+      <%= result %>
+    <% } else { %>
+      結果がここに表示されます。
+    <% } %>
+  </p>
+</body>
+</html>
