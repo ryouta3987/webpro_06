@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 
 let bbs = [];  // 本来はDBMSを使用するが，今回はこの変数にデータを蓄える
+let nextId = 0; // 投稿を指定するための一意のIDを生成するためのカウンター
 
 app.set('view engine', 'ejs');
 app.use("/public", express.static(__dirname + "/public"));
@@ -84,25 +85,75 @@ app.post("/add", (req, res) => {
 
 // これより下はBBS関係
 app.post("/check", (req, res) => {
-  // 本来はここでDBMSに問い合わせる
   res.json( {number: bbs.length });
 });
 
 app.post("/read", (req, res) => {
-  // 本来はここでDBMSに問い合わせる
-  const start = Number( req.body.start );
-  console.log( "read -> " + start );
-  if( start==0 ) res.json( {messages: bbs });
-  else res.json( {messages: bbs.slice( start )});
+  const start = Number(req.body.start);
+  console.log("read -> " + start);
+
+  if (start === 0) {
+    res.json({ messages: bbs });
+  } else {
+    res.json({ messages: bbs.slice(start) });
+  }
 });
 
 app.post("/post", (req, res) => {
   const name = req.body.name;
   const message = req.body.message;
-  console.log( [name, message] );
-  // 本来はここでDBMSに保存する
-  bbs.push( { name: name, message: message } );
-  res.json( {number: bbs.length } );
+  console.log([name, message]);
+
+  const post = { id: nextId++, name: name, message: message };
+  bbs.push(post);
+  res.json({ number: bbs.length });
+});
+
+app.post("/delete", (req, res) => {
+  const id = Number(req.body.id);
+  const index = bbs.findIndex((post) => post.id === id); // IDで投稿を検索
+
+  if (index !== -1) {
+    bbs[index].message = "この投稿は削除されました"; // メッセージを更新
+    console.log( bbs[index]);
+    res.json({ success: true, number: bbs.length });
+  } else {
+    res.json({ success: false, error: "Invalid ID" });
+  }
+});
+
+app.post("/edit", (req, res) => {
+  const id = Number(req.body.id);
+  const newMessage = req.body.message;
+  const index = bbs.findIndex((post) => post.id === id);
+
+  if (index !== -1) {
+    bbs[index].message = newMessage; // メッセージを更新
+    console.log("メッセージが変更されました:", bbs[index]);
+    res.json({ success: true, message: bbs[index] });
+  } else {
+    res.json({ success: false, error: "Invalid ID" });
+  }
+});
+
+app.post("/search", (req, res) => {
+  const keyword = req.body.keyword.toLowerCase();
+  if (!keyword) {
+      res.json({ success: false, error: "キーワードが空です。" });
+      return;
+  }
+
+  // 投稿を検索
+  const results = bbs.filter(post => 
+      post.name.toLowerCase().includes(keyword) || 
+      post.message.toLowerCase().includes(keyword)
+  );
+
+  if (results.length > 0) {
+      res.json({ success: true, messages: results });
+  } else {
+      res.json({ success: false, messages: [] });
+  }
 });
 
 app.get("/bbs", (req,res) => {
