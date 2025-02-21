@@ -3,6 +3,7 @@
 const express = require("express");
 const sqlite3 = require("sqlite3").verbose();
 const bodyParser = require("body-parser");
+const cors = require("cors"); // CORSエラー回避のため
 
 const app = express();
 const PORT = 3000;
@@ -17,7 +18,25 @@ db.serialize(() => {
     db.run("CREATE TABLE likes (id INTEGER PRIMARY KEY, postId INTEGER)");
 });
 
+app.use(cors()); // フロントエンドと連携するためCORSを許可
 app.use(bodyParser.json());
+app.use(express.static("public")); // 静的ファイル提供
+
+// **新規エンドポイント: 推論**
+app.get("/推論", (req, res) => {
+    res.json({ message: "推論API: GETリクエスト受信" });
+});
+
+app.post("/推論", (req, res) => {
+    const { input } = req.body;
+    if (!input) {
+        return res.status(400).json({ error: "入力が必要です" });
+    }
+
+    // ダミー推論処理
+    const result = `推論結果: ${input}を処理しました`;
+    res.json({ result });
+});
 
 // エンドポイント: 新規投稿
 app.post("/api/createPost", (req, res) => {
@@ -46,16 +65,6 @@ app.post("/api/likePost", (req, res) => {
     db.run(query, [postId], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         res.json({ id: this.lastID, postId });
-    });
-});
-
-// エンドポイント: 投稿削除
-app.post("/api/deletePost", (req, res) => {
-    const { postId } = req.body;
-    const query = "DELETE FROM posts WHERE id = ?";
-    db.run(query, [postId], function (err) {
-        if (err) return res.status(500).json({ error: err.message });
-        res.json({ message: "Post deleted", postId });
     });
 });
 
