@@ -1,0 +1,20 @@
+@startuml
+entity "posts" {
+    * ID : INTEGER
+    * タイトル : TEXT
+    * 内容 : TEXT
+    * タイムスタンプ : DATETIME
+}
+entity "comments" {
+    * ID : INTEGER
+    * 投稿ID : INTEGER
+    * コメント : TEXT
+    * タイムスタンプ : DATETIME
+}
+entity "likes" {
+    * ID : INTEGER
+    * 投稿ID : INTEGER
+}
+posts ||--o{ comments : "1対多"
+posts ||--o{ likes : "1対多"
+@enduml
